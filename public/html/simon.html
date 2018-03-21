@@ -4,33 +4,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable = yes">
-    <title>Pomodoro</title>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/simon.css">
+    <title>Simon Game</title>
 </head>
 <body>
 <div id="background">
     <div id="simon">
-        <button id="greenBtn">
+        <audio controls id="player" style="display: none" preload="auto">
+            <source  src="#"></source>
+        </audio>
+        <button id="greenBtn" name="1">
             Green
-            <audio id="greenSound">
-                <source src="../audio/simonSound1.mp3" type="audio/mp3">
+            <audio id="greenSound" preload="auto">
+                <source src="../audio/simonSoundGreen.mp3" type="audio/mp3">
             </audio>
         </button>
-        <button id="redBtn">
+        <button id="redBtn" name="2">
             Red
-            <audio id="redSound">
-                <source src="../audio/simonSound2.mp3" type="audio/mp3">
+            <audio id="redSound" preload="auto">
+                <source src="../audio/simonSoundRed.mp3" type="audio/mp3">
             </audio>
         </button>
-        <button id="yellowBtn">
+        <button id="yellowBtn" name="3">
             Yellow
-            <audio id="yellowSound">
-                <source src="../audio/simonSound3.mp3" type="audio/mp3">
+            <audio id="yellowSound" preload="auto">
+                <source src="../audio/simonSoundYellow.mp3" type="audio/mp3">
             </audio>
         </button>
-        <button id="blueBtn">
+        <button id="blueBtn" name="4">
             Blue
-            <audio id="blueSound">
-                <source src="../audio/simonSound4.mp3" type="audio/mp3">
+            <audio id="blueSound" preload="auto">
+                <source src="../audio/simonSoundBlue.mp3" type="audio/mp3">
             </audio>
         </button>
     </div>
