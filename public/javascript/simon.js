@@ -1,6 +1,10 @@
 var numStepsToWin = 20;
 var numCompSounds = 0;
+var numPlayerSounds = 0;
 var soundsCompPlayed = [];
+var soundsPlayerPlayed = [];
+var correctButtonPressed = true;
+var strictMode = false;
 
 var notes = ["green", "red", "yellow", "blue"];
 var numString = "23102";
@@ -12,9 +16,20 @@ var yellowSound = document.getElementById("yellowSound");
 var blueSound = document.getElementById("blueSound");
 
 var player = document.getElementById('player');
-var index = 0;
+player.playbackRate = 0.5;
 
+var index = 0;
+var stepsCounter = document.getElementById("numSteps");
+var congratsMsg = document.getElementById("congratsMsg");
 var numPlayerTurns = 0;
+
+function arrayContainsAnotherArray(needle, haystack){
+    for(var i = 0; i < needle.length; i++){
+        if(haystack.indexOf(needle[i]) === -1)
+            return false;
+    }
+    return true;
+}
 
 $(document).ready(function() {
     initApp();
@@ -25,11 +40,16 @@ function initApp() {
     var redBtn = document.getElementById("redBtn");
     var yellowBtn = document.getElementById("yellowBtn");
     var blueBtn = document.getElementById("blueBtn");
-    
+    var startBtn = document.getElementById("startBtn");
+    var strictBtn = document.getElementById("strictBtn");
+
     greenBtn.onclick = btnSound;
     redBtn.onclick = btnSound;
     yellowBtn.onclick = btnSound;
     blueBtn.onclick = btnSound;
+
+    startBtn.onclick = startGame;
+    strictBtn.onclick = startStrictGame;
 
     var greenSound = document.getElementById("greenSound");
     var redSound = document.getElementById("redSound");
@@ -38,8 +58,28 @@ function initApp() {
 
     //greenSound.addEventListener('ended', playSound());
 
-    //playRandomSound();
     // play sequence of sounds
+    player.addEventListener('ended', playSequence);
+    //playSequence();
+}
+
+function startGame() {
+    stepsCounter.textContent = "0";
+    numPlayerTurns = 0;
+    numCompSounds = 0;
+    soundsPlayerPlayed = [];
+    soundsCompPlayed = [];
+    playSequence();
+
+}
+
+function startStrictGame() {
+    stepsCounter.textContent = "0";
+    numPlayerTurns = 0;
+    numCompSounds = 0;
+    soundsPlayerPlayed = [];
+    soundsCompPlayed = [];
+    strictMode = true;
     playSequence();
 }
 
@@ -48,52 +88,82 @@ function btnSound(e) {
 
     // check if user selects the correct button that
     // corresponds to the correct step in the sequence
-    var btnNum = target.name;
+    var btnNum = Number(target.name);
 
-    var audio = target.querySelector("audio");
+    soundsPlayerPlayed.push(btnNum);
+    if ((soundsPlayerPlayed[numPlayerTurns] === soundsCompPlayed[numPlayerTurns]) && (soundsPlayerPlayed.length === soundsCompPlayed.length)
+        && soundsPlayerPlayed.length === 20) {
+        console.log("player clicked " + soundsPlayerPlayed[numPlayerTurns]);
+        console.log("you beat the memory game!");
+        congratsMsg.textContent = "You beat the memory game!";
 
-    audio.load();
-    audio.play();
+    } else if ((soundsPlayerPlayed[numPlayerTurns] === soundsCompPlayed[numPlayerTurns]) && (soundsPlayerPlayed.length === soundsCompPlayed.length)) {
+        console.log("player clicked " + soundsPlayerPlayed[numPlayerTurns]);
+        correctButtonPressed = true;
+        numPlayerTurns = 0;
+        soundsPlayerPlayed = [];
+        // play sound
+        player.addEventListener('ended', playSequence);
+        player.src = "../audio/simonSound" + btnNum + ".mp3";
+        player.play();
+        playSequence();
+
+    } else if ((soundsPlayerPlayed[numPlayerTurns] === soundsCompPlayed[numPlayerTurns]) && (soundsPlayerPlayed.length < soundsCompPlayed.length)) {
+        console.log("player clicked " + soundsPlayerPlayed[numPlayerTurns]);
+        correctButtonPressed = true;
+        numPlayerTurns++;
+        // play sound
+        player.src = "../audio/simonSound" + btnNum + ".mp3";
+        player.play();
+    } else if (strictMode) {
+        console.log("wrong button pressed!");
+        startStrictGame();
+    }
+    else {
+        numPlayerTurns = 0;
+        soundsPlayerPlayed = [];
+        correctButtonPressed = false;
+        console.log("wrong button pressed!");
+        player.addEventListener('ended', playSequence);
+        playSequence();
+    }
 }
 
 function playSequence() {
 
-    var index = 0;
-    for (var i = 0; i < numCompSounds; i++) {
-        playSound(i);
+    //var index = 0;
+    //for (var i = 0; i < numCompSounds; i++) {
+    //    playSound(i);
+    //}
+    //
+    //playRandomSound();
+    var numSteps = 0;
+
+    if (index >= soundsCompPlayed.length && correctButtonPressed) {
+        index = 0;
+        stop();
+        playRandomSound();
+        numSteps = soundsCompPlayed.length;
+        stepsCounter.textContent = "" + numSteps;
+        return;
+    }
+    else if (index >= soundsCompPlayed.length && !correctButtonPressed) {
+        index = 0;
+        stop();
+        return;
     }
 
-    numCompSounds++;
+    var note = soundsCompPlayed[index];
+    index++;
 
-    playRandomSound();
+    player.src = "../audio/simonSound" + note + ".mp3";
+    player.play();
+    console.log("computer played " + note);
+
 }
 
-function playRandomSound() {
-    var soundVal = Math.floor(Math.random() * (4 - 1 + 1)) + 1;
-    var color;
-
-    switch (soundVal) {
-        case 1:
-            console.log('Green.');
-            color = document.querySelector('#greenSound');
-            break;
-        case 2:
-            console.log('Red.');
-            color = document.querySelector('#redSound');
-            break;
-        case 3:
-            console.log('Yellow.');
-            color = document.querySelector('#yellowSound');
-            break;
-        case 4:
-            console.log('Blue.');
-            color = document.querySelector('#blueSound');
-            break;
-    }
-
-    color.load();
-    color.play();
-    soundsCompPlayed.push(soundVal);
+function stop () {
+    player.removeEventListener('ended', playSequence); // the last note has been played, remove the event listener
 }
 
 function playSound(index) {
@@ -102,25 +172,55 @@ function playSound(index) {
 
     switch (step) {
         case 1:
-            console.log('Green.');
+            console.log('Play Green step');
             color = document.querySelector('#greenSound');
             break;
         case 2:
-            console.log('Red.');
+            console.log('Play Red step');
             color = document.querySelector('#redSound');
             break;
         case 3:
-            console.log('Yellow.');
+            console.log('Play Yellow step');
             color = document.querySelector('#yellowSound');
             break;
         case 4:
-            console.log('Blue.');
+            console.log('Play Blue step');
             color = document.querySelector('#blueSound');
             break;
     }
 
+    //color.load();
+    //color.play();
+}
+
+function playRandomSound() {
+    var soundVal = Math.floor(Math.random() * (4 - 1 + 1)) + 1;
+    var color;
+
+    switch (soundVal) {
+        case 1:
+            console.log('Randomly played Green.');
+            color = document.querySelector('#greenSound');
+            break;
+        case 2:
+            console.log('Randomly played Red.');
+            color = document.querySelector('#redSound');
+            break;
+        case 3:
+            console.log('Randomly played Yellow.');
+            color = document.querySelector('#yellowSound');
+            break;
+        case 4:
+            console.log('Randomly played Blue.');
+            color = document.querySelector('#blueSound');
+            break;
+    }
+
+    color.playbackRate = 0.5;
     color.load();
     color.play();
+    numCompSounds++;
+    soundsCompPlayed.push(soundVal);
 }
 
 //function playNote() {
