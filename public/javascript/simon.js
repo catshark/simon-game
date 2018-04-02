@@ -1,19 +1,8 @@
-var numStepsToWin = 20;
 var numCompSounds = 0;
-var numPlayerSounds = 0;
 var soundsCompPlayed = [];
 var soundsPlayerPlayed = [];
 var correctButtonPressed = true;
 var strictMode = false;
-
-var notes = ["green", "red", "yellow", "blue"];
-var numString = "23102";
-var empNumString = "";
-
-var greenSound = document.getElementById("greenSound");
-var redSound = document.getElementById("redSound");
-var yellowSound = document.getElementById("yellowSound");
-var blueSound = document.getElementById("blueSound");
 
 var player = document.getElementById('player');
 player.playbackRate = 0.5;
@@ -22,14 +11,6 @@ var index = 0;
 var stepsCounter = document.getElementById("numSteps");
 var congratsMsg = document.getElementById("congratsMsg");
 var numPlayerTurns = 0;
-
-function arrayContainsAnotherArray(needle, haystack){
-    for(var i = 0; i < needle.length; i++){
-        if(haystack.indexOf(needle[i]) === -1)
-            return false;
-    }
-    return true;
-}
 
 $(document).ready(function() {
     initApp();
@@ -131,12 +112,6 @@ function btnSound(e) {
 
 function playSequence() {
 
-    //var index = 0;
-    //for (var i = 0; i < numCompSounds; i++) {
-    //    playSound(i);
-    //}
-    //
-    //playRandomSound();
     var numSteps = 0;
 
     if (index >= soundsCompPlayed.length && correctButtonPressed) {
@@ -188,9 +163,6 @@ function playSound(index) {
             color = document.querySelector('#blueSound');
             break;
     }
-
-    //color.load();
-    //color.play();
 }
 
 function playRandomSound() {
@@ -222,30 +194,3 @@ function playRandomSound() {
     numCompSounds++;
     soundsCompPlayed.push(soundVal);
 }
-
-//function playNote() {
-//    if (index >= numString.length) {
-//        stop();
-//        return;
-//    }
-//    var note = notes[Number(numString[index])]; // transform the number to the corresponding note ('1' => 'C')
-//    if (!note) {
-//        stop();
-//        return;
-//    }
-//    index++; // when 'playNote' is called the next time, the next note will be played
-//    player.src = "../audio/simonSound" + note + ".mp3";
-//    player.load();
-//    player.play(); // when this ends, the 'ended' event will be fired and 'playNote' will be called
-//}
-//
-//function stop () {
-//    player.removeEventListener('ended', playNote); // the last note has been played, remove the event listener
-//}
-//
-//player.addEventListener('ended', playNote); // whenever the sound ends, call 'playNote'
-//playNote(); // start to play the first note
-
-//User Story: Each time I input a series of button presses correctly, I see the same series of button presses but with an additional step.
-
-//User Story: I hear a sound that corresponds to each button both when the series of button presses plays, and when I personally press a button.
